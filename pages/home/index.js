@@ -5,6 +5,7 @@ import {StyleSheet, Text, View} from 'react-native';
 const Home = () => {
 
     const[token, setToken] = useState('');
+    const [eventos, setEventos] = useState([]);
 
     useEffect(()=>{
          getData();
@@ -21,10 +22,33 @@ const Home = () => {
 
         }
     }
+    useEffect(() => {
+        listarEventos();
+    }, []); 
+
+    const listarEventos = () => {
+        fetch('http://192.168.15.10:5000/api/eventos')
+            .then(response => response.json())
+            .then(data => {
+                setEventos(data.data)
+                console.log(data.data);
+            })
+            .catch(err => console.error(err));
+    }
+
+    const renderItem = ({ item }) => (
+        <ItemEvento nome={item.nome} imagem={item.urlImagem} link={item.link} />
+      );
+
     return(
         <View>
-            <Text>Home</Text>
-            <Text>{token}</Text>
+            <Text>HOME</Text>
+            {/* <Text>{token}</Text> */}
+            <FlatList
+                data={eventos}
+                renderItem={renderItem}
+                keyExtractor={item => item.id}
+            />
         </View>
     )
 }
